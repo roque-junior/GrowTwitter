@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// schema.prisma
+
+// arquivo schema.prisma
+
+model Usuario {
+  id         Int       @id @default(autoincrement())
+  nome       String
+  // outras propriedades do usuário
+
+  // Relacionamentos
+  tweets     Tweet[]
+  likes      Like[]
+  seguidores Seguidor[]
+  replies    Reply[]   @relation("UsuarioReply")  // Adicione esta linha
+}
+
+model Tweet {
+  id       Int      @id @default(autoincrement())
+  texto    String
+  // outras propriedades do tweet
+
+  // Relacionamentos
+  autor    Usuario  @relation(fields: [autorId], references: [id])
+  autorId  Int
+  likes    Like[]
+  replies  Reply[]
+}
+
+model Like {
+  id       Int      @id @default(autoincrement())
+  // outras propriedades do like
+
+  // Relacionamentos
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+  tweet   Tweet    @relation(fields: [tweetId], references: [id])
+  tweetId Int
+}
+
+model Seguidor {
+  id       Int      @id @default(autoincrement())
+  // outras propriedades do seguidor
+
+  // Relacionamentos
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+}
+
+model Reply {
+  id       Int      @id @default(autoincrement())
+  texto    String
+  // outras propriedades da resposta
+
+  // Relacionamentos
+  autor    Usuario  @relation(fields: [autorId], references: [id], name: "UsuarioReply")
+  autorId  Int
+  tweet   Tweet    @relation(fields: [tweetId], references: [id])
+  tweetId Int
+}
